@@ -1,7 +1,6 @@
 
 import re
 
-# Регулярки для PII
 URL_RE = re.compile(r'https?://\S+|www\.\S+')
 EMAIL_RE = re.compile(r'\S+@\S+')
 PHONE_RE = re.compile(r'\+?\d[\d\s\-()]{7,}')
