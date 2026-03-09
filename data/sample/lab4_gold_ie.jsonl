@@ -1,0 +1,3 @@
+{"text_id": "1", "text": "Зустріч 25 грудня 2024, сума 1 000 грн, договір №123/2024", "field_type": "DATE", "span_text": "25 грудня 2024", "start_char": 9, "end_char": 25, "normalized_value": "2024-12-25"}
+{"text_id": "1", "text": "Зустріч 25 грудня 2024, сума 1 000 грн, договір №123/2024", "field_type": "AMOUNT", "span_text": "1 000 грн", "start_char": 27, "end_char": 35, "normalized_value": "1000 UAH"}
+{"text_id": "1", "text": "Зустріч 25 грудня 2024, сума 1 000 грн, договір №123/2024", "field_type": "DOC_ID", "span_text": "№123/2024", "start_char": 37, "end_char": 46, "normalized_value": "123/2024"}

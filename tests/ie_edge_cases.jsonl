@@ -1,0 +1,3 @@
+{"id": 1, "raw_text": "30 лютого 2023", "field_type": "DATE", "expected_behavior": "не вважається реальною датою"}
+{"id": 2, "raw_text": "100%", "field_type": "AMOUNT", "expected_behavior": "не вважаємо AMOUNT"}
+{"id": 3, "raw_text": "№ 123/45", "field_type": "DOC_ID", "expected_behavior": "правильний DOC_ID"}
