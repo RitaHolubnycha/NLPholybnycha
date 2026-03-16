@@ -1,0 +1,14 @@
+{
+  "dataset": "UD Ukrainian ParlaMint",
+  "strategy": "predefined_dataset_split",
+  "unit_of_split": "sentence_id",
+  "train_ids": "data/sample/splits_train_ids.txt",
+  "validation_ids": "data/sample/splits_val_ids.txt",
+  "test_ids": "data/sample/splits_test_ids.txt",
+  "csv_files": {
+    "train": "data/splits/train.csv",
+    "validation": "data/splits/validation.csv",
+    "test": "data/splits/test.csv"
+  },
+  "created": "2026-03-16 14:36:37.802483"
+}
