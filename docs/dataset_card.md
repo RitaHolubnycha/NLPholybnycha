@@ -28,6 +28,12 @@
   - `ie_policy.md` — опис правил витягу
   - `audit_summary_lab4.md` — precision по полях, аналіз помилок
 - Edge cases: `ie_edge_cases.jsonl` (20+ тестів)
+## ЛР5 Splits & leakage
+
+- Датасет містить офіційний розподіл на train/dev/test.
+- Одиницею split є sentence_id (речення).
+- Було перевірено можливі дублікати та near-duplicates між split.
+- Критичних ознак data leakage не виявлено.
 
 ## Примітки
 - `data/raw` не змінювався
