@@ -1,2 +1,18 @@
-pandas
-tqdm
+# Для ЛР1–ЛР6
+
+# Основні
+pandas>=1.5            # обробка таблиць / CSV
+numpy>=1.23            # числові операції
+scikit-learn>=1.2      # TF-IDF, LogisticRegression, метрики
+
+# NLP / текстові операції
+regex>=2023.6          # для регулярних виразів у препроцесі
+nltk>=3.8              # лематизація / токенізація (якщо використовується)
+spacy>=3.6             # лематизація / POS (якщо застосовувалась lemma_text)
+
+# Візуалізація
+matplotlib>=3.7         # графіки, confusion matrix
+seaborn>=0.12           # heatmaps, стильні графіки
+
+# Додатково (якщо треба Colab / download data)
+gdown>=4.7             # завантаження даних із Google Drive (опційно)
