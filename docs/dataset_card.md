@@ -70,3 +70,34 @@
 - використання char n-grams
 - додавання контекстних ознак
 - балансування класів
+## Lab7 Observations (SVM + Char-ngrams)
+
+### Class imbalance
+Присутній.
+Клас PUNCT домінує та часто передбачався помилково (high false positive rate у baseline).
+
+### Noisy data
+Є:
+- числові токени (116, 41-а)
+- змішані формати (AliExpress)
+- іноземні слова
+
+Це впливає на якість word-based моделей.
+
+### Char-ngrams effect
+Char-ngrams (3–5) дали значне покращення:
+- краще обробляються варіації написання
+- менше помилок на noisy токенах
+- покращення Macro-F1 (~+0.12 від baseline)
+
+### Most problematic class
+PUNCT:
+- у baseline мав дуже високий recall і низький precision
+- модель "перетягувала" багато токенів у цей клас
+
+### Precision / Recall trade-off
+Обрано баланс precision/recall:
+- зменшено false positives для PUNCT
+- збережено достатній recall
+
+Threshold підбирався на validation.
