@@ -265,3 +265,64 @@ cases з частково відсутніми файлами
 Чи допоміг tool-grounded підхід:
 Так.
 Дозволив чітко розділити перевірку на етапи та уникнути “LLM-оцінки на око”.
+### Lab 14 — Flow Orchestration
+Flow use case
+
+Було використано Extraction / NER + Classification hybrid flow, який поєднує:
+
+фінансові запити (перекази, суми, валюта),
+CV / skills extraction,
+generic / noisy текст.
+Input типи
+
+У test cases використовувались:
+
+структуровані запити (переказ грошей),
+CV / резюме текст,
+noisy / random text,
+часткові дані (лише сума / лише банк / лише ключові слова),
+змішані інтенти,
+ambiguous inputs.
+Tools / components (flow steps)
+
+Flow працює через етапи:
+
+ingest — підготовка input + state init
+route — визначення типу задачі
+execute — extraction / summary generation
+validate — перевірка schema / required fields
+export — формування structured output
+Noisy / ambiguous cases
+
+Так, у dataset були:
+
+random noise (!!! ###, tokens),
+змішані intent (money + CV),
+часткові дані (500, Monobank),
+невизначені запити.
+Чи допоміг flow-grounded підхід?
+
+Так, частково.
+
+Покращення:
+
+краще видно помилки по етапах (route vs execute vs validate),
+validation ловить missing fields,
+structured output стабільніший ніж ad-hoc pipeline,
+простіше дебажити кейси.
+
+Обмеження:
+
+прості кейси не потребують повного flow,
+router інколи помиляється на ambiguous текстах,
+rule-based execute обмежує якість extraction.
+Висновок по dataset
+
+Dataset добре покриває:
+
+прості кейси,
+edge cases,
+noisy inputs,
+ambiguous intents,
+часткові дані,
+що дозволяє оцінити повний pipeline flow (ingest → route → execute → validate → export).
