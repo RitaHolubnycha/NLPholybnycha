@@ -236,4 +236,32 @@ ParlaMint-UA (оброблені парламентські стенограми
 ### Де multi-agent був надлишковим
 - прості або короткі фрази
 - випадки, де Extractor вже знаходив всі сутності
-- службові речення без named entities
+- службові речення без named entitiesLab 12 dataset description
+
+### Lab 12 dataset description
+Agent use case:
+Student lab checker (перевірка здачі лабораторної роботи)
+
+Типи input у test cases:
+
+валідний репозиторій + правильний тег + повна структура
+відсутній репозиторій
+неправильний release tag
+неповна структура файлів
+частково заповнені submission дані
+
+Tools, що використовувались:
+
+check_required_links
+check_repo_structure
+validate_release_tag
+
+Noisy / ambiguous cases:
+
+cases без repo_url
+cases з неправильним tag
+cases з частково відсутніми файлами
+
+Чи допоміг tool-grounded підхід:
+Так.
+Дозволив чітко розділити перевірку на етапи та уникнути “LLM-оцінки на око”.
