@@ -1,0 +1,313 @@
+### POS-tagging для української політичної мови
+
+## UD Ukrainian-ParlaMint
+
+---
+
+# 1. Опис проєкту
+
+У цьому проєкті розглядається задача автоматичного визначення частин мови (POS-tagging) для української політичної розмовної мови на основі корпусу UD Ukrainian-ParlaMint.
+
+Метою роботи було:
+
+* побудувати моделі для класифікації POS-тегів;
+* порівняти кілька підходів машинного навчання;
+* дослідити вплив різних ознак;
+* провести оцінювання моделей та аналіз помилок.
+
+---
+
+# 2. Постановка задачі
+
+POS-tagging (Part-of-Speech tagging) — це задача NLP, у якій кожному слову в реченні потрібно визначити відповідну частину мови.
+
+Приклад:
+
+| Token     | POS   |
+| --------- | ----- |
+| Україна   | PROPN |
+| підтримує | VERB  |
+| закон     | NOUN  |
+
+Задача є складною для української мови через:
+
+* багату морфологію;
+* неоднозначність слів;
+* контекстну залежність;
+* особливості розмовної мови.
+
+---
+
+# 3. Датасет
+
+Використаний датасет:
+UD Ukrainian-ParlaMint
+
+Джерело:
+https://github.com/UniversalDependencies/UD_Ukrainian-ParlaMint
+
+Корпус містить:
+
+* стенограми засідань парламенту;
+* політичну розмовну мову;
+* морфологічно розмічені токени;
+* POS-теги Universal Dependencies.
+
+Розподіл даних:
+
+| Частина    | Розмір |
+| ---------- | ------ |
+| Train      | 87 369 |
+| Validation | 10 842 |
+| Test       | 10 955 |
+
+Найчастіші класи:
+
+* NOUN
+* PUNCT
+* VERB
+
+Рідкісні класи:
+
+* INTJ
+* X
+* NUM
+
+---
+
+# 4. Представлення даних
+
+Було використано два підходи до формування текстових ознак.
+
+## Базове представлення
+
+```python id="5kvh2t"
+train_df["text"] = train_df["token"].astype(str)
+```
+
+Використовувався лише token.
+
+---
+
+## Покращене представлення
+
+```python id="7gzm4x"
+train_df["text2"] = train_df["token"] + " " + train_df["lemma"]
+```
+
+Було об’єднано token та lemma для кращого врахування морфології слів.
+
+---
+
+# 5. Моделі
+
+## 5.1 Logistic Regression (Baseline)
+
+```python id="9p1t6q"
+pipe1 = Pipeline([
+    ("tfidf", TfidfVectorizer(ngram_range=(1,1))),
+    ("clf", LogisticRegression(max_iter=300))
+])
+```
+
+Ознаки:
+
+* TF-IDF
+* word unigrams
+
+Результати:
+
+* Accuracy: 0.771
+* Macro-F1: 0.663
+
+---
+
+## 5.2 Покращена Logistic Regression
+
+```python id="1md8rv"
+pipe2 = Pipeline([
+    ("tfidf", TfidfVectorizer(
+        ngram_range=(1,2),
+        sublinear_tf=True
+    )),
+    ("clf", LogisticRegression(max_iter=500))
+])
+```
+
+Ознаки:
+
+* token + lemma
+* word bigrams
+* sublinear TF scaling
+
+Результати:
+
+* Accuracy: 0.822
+* Macro-F1: 0.695
+
+---
+
+## 5.3 LinearSVC (Word Features)
+
+```python id="3fqp8j"
+vectorizer_word = TfidfVectorizer(
+    analyzer='word',
+    ngram_range=(1,2),
+    sublinear_tf=True
+)
+
+svm_word = LinearSVC(C=1.0)
+```
+
+Результати:
+
+* Accuracy: 0.856
+* Macro-F1: 0.745
+
+---
+
+## 5.4 LinearSVC (Word + Character Features)
+
+```python id="2nh7wx"
+vectorizer_char = TfidfVectorizer(
+    analyzer='char',
+    ngram_range=(3,5),
+    sublinear_tf=True
+)
+
+svm_char_balanced = LinearSVC(
+    C=1.0,
+    class_weight='balanced'
+)
+```
+
+Результати:
+
+* Accuracy: 0.971
+* Macro-F1: 0.836
+
+Ця модель показала найкращий результат.
+
+---
+
+# 6. Метрики оцінювання
+
+Для оцінювання моделей використовувались:
+
+* Accuracy
+* Macro-F1
+* Classification Report
+* Confusion Matrix
+* Precision-Recall Curve
+
+Приклад обчислення:
+
+```python id="6wqy9m"
+accuracy_score(y_val, y_pred)
+f1_score(y_val, y_pred, average='macro')
+```
+
+---
+
+# 7. Порівняння моделей
+
+| Модель                        | Ознаки            | Accuracy | Macro-F1 |
+| ----------------------------- | ----------------- | -------- | -------- |
+| Logistic Regression Baseline  | word(1,1)         | 0.771    | 0.663    |
+| Покращена Logistic Regression | word(1,2) + lemma | 0.822    | 0.695    |
+| LinearSVC Word                | word(1,2)         | 0.856    | 0.745    |
+| LinearSVC Word+Char           | word+char(3,5)    | 0.971    | 0.836    |
+
+Основні висновки:
+
+* LinearSVC перевищує Logistic Regression;
+* char n-grams дали найбільший приріст якості;
+* балансування класів покращило Macro-F1.
+
+---
+
+# 8. Feature Importance
+
+Модель навчилась виділяти змістовні політичні та мовні патерни.
+
+Приклади найважливіших ознак:
+
+| POS   | Top Features                 |
+| ----- | ---------------------------- |
+| NOUN  | закон, депутат, питання      |
+| PROPN | Україна, Володимир, Янукович |
+| VERB  | працювати, сказати, просити  |
+| ADJ   | український, державний       |
+| AUX   | бути, буде, були             |
+
+Це свідчить про те, що модель навчилась враховувати як лексичні, так і морфологічні особливості тексту.
+
+---
+
+# 9. Аналіз помилок
+
+Базова модель допустила приблизно 1954 помилки.
+
+Найчастіші типи помилок:
+
+* NOUN → PUNCT
+* VERB → PUNCT
+* PROPN → NOUN
+* PART → CCONJ
+
+Приклади:
+
+| Token     | True  | Predicted |
+| --------- | ----- | --------- |
+| Туреччини | PROPN | NOUN      |
+| Будемо    | VERB  | AUX       |
+| 41-а      | ADJ   | PUNCT     |
+
+Основні причини:
+
+* неоднозначність української морфології;
+* розмовний стиль;
+* дисбаланс класів.
+
+Покращена модель LinearSVC значно зменшила кількість помилок.
+
+---
+
+# 10. Застосування
+
+Розроблена система може використовуватись у:
+
+* NLP-пайплайнах;
+* Named Entity Recognition;
+* синтаксичному аналізі;
+* аналізі політичного дискурсу;
+* чат-ботах;
+* пошукових системах;
+* українських мовних технологіях.
+
+---
+
+# 11. Висновки
+
+У роботі було реалізовано та досліджено кілька підходів до POS-tagging української політичної мови.
+
+Найкращий результат показала модель:
+
+* LinearSVC
+* TF-IDF word + char features
+* balanced class weights
+
+Фінальні результати:
+
+* Accuracy ≈ 0.97
+* Macro-F1 ≈ 0.836
+
+Експерименти показали, що character n-grams суттєво покращують якість класифікації для морфологічно багатих мов, таких як українська.
+
+Можливі подальші покращення:
+
+* transformer-моделі;
+* contextual embeddings;
+* нейронні sequence labeling моделі.
+
+---
